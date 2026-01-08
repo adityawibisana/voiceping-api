@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.vanniktech.mavenPublish)
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.ktorfit) apply false
+    alias(libs.plugins.kotlinxSerialization) apply false
 }
 
 group = "io.github.kotlin"
@@ -39,7 +41,13 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            //put your multiplatform dependencies here
+            // Ktorfit Runtime
+            implementation(libs.ktorfit.lib)
+
+            // Ktor Client & Serialization
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
 
         commonTest.dependencies {
