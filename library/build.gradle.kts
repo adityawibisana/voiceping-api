@@ -5,9 +5,9 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.vanniktech.mavenPublish)
-    alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.ktorfit) apply false
-    alias(libs.plugins.kotlinxSerialization) apply false
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.ktorfit)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 group = "io.github.kotlin"
@@ -52,8 +52,28 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
+}
+
+dependencies {
+    // Common Metadata (REQUIRED for visibility in commonMain)
+    add("kspCommonMainMetadata", libs.ktorfit.ksp)
+
+    // Android
+    add("kspAndroid", libs.ktorfit.ksp)
+
+    // JVM
+    add("kspJvm", libs.ktorfit.ksp)
+
+    // iOS
+    add("kspIosX64", libs.ktorfit.ksp)
+    add("kspIosArm64", libs.ktorfit.ksp)
+    add("kspIosSimulatorArm64", libs.ktorfit.ksp)
+
+    // Linux
+    add("kspLinuxX64", libs.ktorfit.ksp)
 }
 
 mavenPublishing {
@@ -87,5 +107,12 @@ mavenPublishing {
             connection = "YYY"
             developerConnection = "ZZZ"
         }
+    }
+}
+
+afterEvaluate {
+    tasks.findByName("extractAndroidMainAnnotations")?.apply {
+        dependsOn("kspCommonMainKotlinMetadata")
+        dependsOn("kspAndroidMain")
     }
 }
