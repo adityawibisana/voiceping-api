@@ -1,4 +1,4 @@
-package io.github.kotlin.fibonacci
+package aditya.wibisana.voicepingapi
 
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

@@ -1,4 +1,4 @@
-package io.github.kotlin.fibonacci.model
+package aditya.wibisana.voicepingapi.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,10 +1,10 @@
-package io.github.kotlin.fibonacci
+package aditya.wibisana.voicepingapi
 
+import aditya.wibisana.voicepingapi.model.LoginResponse
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.http.Field
 import de.jensklingenberg.ktorfit.http.FormUrlEncoded
 import de.jensklingenberg.ktorfit.http.POST
-import io.github.kotlin.fibonacci.model.LoginResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -20,9 +20,9 @@ interface VoicepingApi {
     suspend fun login(
         @Field("username") username: String,
         @Field("password") password: String,
-        @Field("grant_type") grantType: String = io.github.kotlin.fibonacci.grantType,
-        @Field("client_id") clientId: String = io.github.kotlin.fibonacci.clientId,
-        @Field("client_secret") clientSecret: String = io.github.kotlin.fibonacci.clientSecret,
+        @Field("grant_type") grantType: String = aditya.wibisana.voicepingapi.grantType,
+        @Field("client_id") clientId: String = aditya.wibisana.voicepingapi.clientId,
+        @Field("client_secret") clientSecret: String = aditya.wibisana.voicepingapi.clientSecret,
     ): LoginResponse
 
 }

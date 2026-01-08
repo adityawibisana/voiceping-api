@@ -10,17 +10,20 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
 }
 
-group = "io.github.kotlin"
+// 1. Set the Group ID for the project
+group = "aditya.wibisana"
 version = "1.0.0"
 
 kotlin {
     jvm()
     androidLibrary {
-        namespace = "org.jetbrains.kotlinx.multiplatform.library.template"
+        // 2. Set the Android Namespace (used for R.class generation)
+        namespace = "aditya.wibisana.voicepingapi"
+
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
-        withJava() // enable java compilation support
+        withJava()
         withHostTestBuilder {}.configure {}
         withDeviceTestBuilder {
             sourceSetTreeName = "test"
@@ -28,9 +31,7 @@ kotlin {
 
         compilations.configureEach {
             compilerOptions.configure {
-                jvmTarget.set(
-                    JvmTarget.JVM_11
-                )
+                jvmTarget.set(JvmTarget.JVM_11)
             }
         }
     }
@@ -41,15 +42,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            // Ktorfit Runtime
             implementation(libs.ktorfit.lib)
-
-            // Ktor Client & Serialization
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
         }
-
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
@@ -58,54 +55,45 @@ kotlin {
 }
 
 dependencies {
-    // Common Metadata (REQUIRED for visibility in commonMain)
     add("kspCommonMainMetadata", libs.ktorfit.ksp)
-
-    // Android
     add("kspAndroid", libs.ktorfit.ksp)
-
-    // JVM
     add("kspJvm", libs.ktorfit.ksp)
-
-    // iOS
     add("kspIosX64", libs.ktorfit.ksp)
     add("kspIosArm64", libs.ktorfit.ksp)
     add("kspIosSimulatorArm64", libs.ktorfit.ksp)
-
-    // Linux
     add("kspLinuxX64", libs.ktorfit.ksp)
 }
 
 mavenPublishing {
     publishToMavenCentral()
-
     signAllPublications()
 
-    coordinates(group.toString(), "library", version.toString())
+    // 3. Set the final artifact coordinate: aditya.wibisana:voicepingapi:1.0.0
+    coordinates(group.toString(), "voicepingapi", version.toString())
 
     pom {
-        name = "My library"
-        description = "A library."
-        inceptionYear = "2024"
-        url = "https://github.com/kotlin/multiplatform-library-template/"
+        name = "VoicePing API"
+        description = "Kotlin Multiplatform API client for VoicePing."
+        inceptionYear = "2026"
+        url = "https://github.com/adityawibisana/voiceping-api" // Update this to your real repo
         licenses {
             license {
-                name = "XXX"
-                url = "YYY"
-                distribution = "ZZZ"
+                name = "MIT"
+                url = "https://opensource.org/licenses/MIT"
+                distribution = "repo"
             }
         }
         developers {
             developer {
-                id = "XXX"
-                name = "YYY"
-                url = "ZZZ"
+                id = "adityawibisana"
+                name = "Aditya Wibisana"
+                url = "https://github.com/adityawibisana"
             }
         }
         scm {
-            url = "XXX"
-            connection = "YYY"
-            developerConnection = "ZZZ"
+            url = "https://github.com/adityawibisana/voiceping-api"
+            connection = "scm:git:git://github.com/adityawibisana/voiceping-api.git"
+            developerConnection = "scm:git:ssh://git@github.com/adityawibisana/voiceping-api.git"
         }
     }
 }
