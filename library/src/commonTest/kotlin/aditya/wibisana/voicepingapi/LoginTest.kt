@@ -10,10 +10,15 @@ class LoginTest {
 
     @Test
     fun login() = runTest {
-        val response = api.service.login(
-            username = "1@trial.vp",
-            password = "thanksfortesting",
-        )
+        val response = try {
+            api.service.login(
+                username = "1@trial.vp",
+                password = "thanksfortesting",
+            )
+        } catch (e: Exception) {
+            println("Error when login: ${e.message}")
+            throw e
+        }
         assertEquals("1@trial.vp", response.username)
         assertTrue(response.accessToken.isNotEmpty())
         assertEquals("trial.vp", response.company)
