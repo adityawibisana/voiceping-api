@@ -6,7 +6,9 @@ import de.jensklingenberg.ktorfit.http.Field
 import de.jensklingenberg.ktorfit.http.FormUrlEncoded
 import de.jensklingenberg.ktorfit.http.POST
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.request
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -27,7 +29,9 @@ interface VoicepingApi {
 
 }
 
-class API {
+class API(
+    private val engine: HttpClientEngine? = null
+) {
     private val baseUrl = "https://staging.voiceoverping.net/"
 
     private val jsonConfig = Json {
@@ -37,9 +41,21 @@ class API {
         explicitNulls = false
     }
 
-    private val httpClient = HttpClient {
-        install(ContentNegotiation) {
-            json(jsonConfig)
+
+
+    private val httpClient = if (engine == null) {
+        HttpClient {
+            expectSuccess = true
+            install(ContentNegotiation) {
+                json(jsonConfig)
+            }
+        }
+    } else {
+        HttpClient(engine) {
+            expectSuccess = true // Helps catch non-200 errors early
+            install(ContentNegotiation) {
+                json(jsonConfig)
+            }
         }
     }
 
