@@ -11,8 +11,8 @@ plugins {
 }
 
 // 1. Set the Group ID for the project
-group = "aditya.wibisana"
-version = "1.0.0"
+group = "io.github.adityawibisana"
+version = "0.0.1"
 
 kotlin {
     jvm()
@@ -63,17 +63,20 @@ dependencies {
 }
 
 mavenPublishing {
-    publishToMavenCentral()
+    publishToMavenCentral(false)
     signAllPublications()
 
-    // 3. Set the final artifact coordinate: aditya.wibisana:voicepingapi:1.0.0
-    coordinates(group.toString(), "voicepingapi", version.toString())
+    coordinates(
+        group.toString(),
+        "voiceping-api",
+        version.toString()
+    )
 
     pom {
         name = "VoicePing API"
         description = "Kotlin Multiplatform API client for VoicePing."
         inceptionYear = "2026"
-        url = "https://github.com/adityawibisana/voiceping-api" // Update this to your real repo
+        url = "https://github.com/adityawibisana/voiceping-api"
         licenses {
             license {
                 name = "MIT"
@@ -101,4 +104,5 @@ afterEvaluate {
         dependsOn("kspCommonMainKotlinMetadata")
         dependsOn("kspAndroidMain")
     }
+    tasks.findByName("sourcesJar")?.dependsOn("kspCommonMainKotlinMetadata")
 }
