@@ -63,7 +63,7 @@ dependencies {
 }
 
 mavenPublishing {
-    publishToMavenCentral()
+    publishToMavenCentral(false)
     signAllPublications()
 
     coordinates(
@@ -104,4 +104,5 @@ afterEvaluate {
         dependsOn("kspCommonMainKotlinMetadata")
         dependsOn("kspAndroidMain")
     }
+    tasks.findByName("sourcesJar")?.dependsOn("kspCommonMainKotlinMetadata")
 }
