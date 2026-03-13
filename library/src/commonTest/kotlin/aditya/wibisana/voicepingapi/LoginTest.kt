@@ -20,7 +20,10 @@ class LoginTest {
         assertTrue("Expected 2 emissions but got ${emissions.size}: $emissions") { emissions.size == 2 }
         assertTrue { emissions[0] is Login.State.Loading }
         val result = emissions[1]
-        assertTrue("Expected Success but got: ${(result as? Login.State.Failed)?.data?.message}") { result is Login.State.Success }
+        if (result is Login.State.Failed) {
+            println("=== LOGIN FAILURE MESSAGE: ${result.data.message} ===")
+            kotlin.test.fail("Expected Success but got Failed: ${result.data.message}")
+        }
 
         val data = (result as Login.State.Success).data
         assertTrue(data.accessToken.isNotEmpty())
