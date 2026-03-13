@@ -8,7 +8,6 @@ import de.jensklingenberg.ktorfit.http.POST
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.request
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -25,23 +24,20 @@ interface VoicepingApi {
         @Field("grant_type") grantType: String = aditya.wibisana.voicepingapi.grantType,
         @Field("client_id") clientId: String = aditya.wibisana.voicepingapi.clientId,
         @Field("client_secret") clientSecret: String = aditya.wibisana.voicepingapi.clientSecret,
-    ): LoginResponse
+    ): LoginResponse.Success
 
 }
 
 class API(
-    private val engine: HttpClientEngine? = null
+    engine: HttpClientEngine? = null,
+    baseUrl: String = "https://staging.voiceoverping.net/"
 ) {
-    private val baseUrl = "https://staging.voiceoverping.net/"
-
     private val jsonConfig = Json {
         encodeDefaults = true
         ignoreUnknownKeys = true
         isLenient = true
         explicitNulls = false
     }
-
-
 
     private val httpClient = if (engine == null) {
         HttpClient {
