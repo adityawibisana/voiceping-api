@@ -7,7 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class LoginTest {
-    val api: API = API()
+    val api: API = API(engine = getTestEngine())
 
     @Test
     fun `should be able to login with correct username and password`() = runTest {
