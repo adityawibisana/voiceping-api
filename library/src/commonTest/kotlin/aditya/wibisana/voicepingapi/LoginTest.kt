@@ -17,11 +17,12 @@ class LoginTest {
             password = "thanksfortesting",
         ).toList()
 
-        assertTrue { emissions.size == 2 }
+        assertTrue("Expected 2 emissions but got ${emissions.size}: $emissions") { emissions.size == 2 }
         assertTrue { emissions[0] is Login.State.Loading }
-        assertTrue { emissions[1] is Login.State.Success }
+        val result = emissions[1]
+        assertTrue("Expected Success but got: ${(result as? Login.State.Failed)?.data?.message}") { result is Login.State.Success }
 
-        val data = (emissions[1] as Login.State.Success).data
+        val data = (result as Login.State.Success).data
         assertTrue(data.accessToken.isNotEmpty())
         assertTrue { data.username == "1@trial.vp" }
         assertTrue { data.company == "trial.vp" }
