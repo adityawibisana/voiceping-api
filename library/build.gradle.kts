@@ -5,8 +5,6 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.vanniktech.mavenPublish)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.ktorfit)
     alias(libs.plugins.kotlinxSerialization)
 }
 
@@ -15,6 +13,9 @@ group = "io.github.adityawibisana"
 version = "0.0.1"
 
 kotlin {
+    // Proactive fix: Enforce JVM 21 globally using Kotlin toolchains
+    jvmToolchain(21)
+
     jvm()
     androidLibrary {
         // 2. Set the Android Namespace (used for R.class generation)
@@ -31,17 +32,18 @@ kotlin {
 
         compilations.configureEach {
             compilerOptions.configure {
-                jvmTarget.set(JvmTarget.JVM_11)
+                // Updated to JVM 21
+                jvmTarget.set(JvmTarget.JVM_21)
             }
         }
     }
+
     iosX64()
     iosArm64()
     iosSimulatorArm64()
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.ktorfit.lib)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
@@ -50,6 +52,9 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
         }
+        jvmTest.dependencies {
+            implementation(libs.ktor.client.cio)
+        }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
@@ -57,12 +62,7 @@ kotlin {
 }
 
 dependencies {
-    add("kspCommonMainMetadata", libs.ktorfit.ksp)
-    add("kspAndroid", libs.ktorfit.ksp)
-    add("kspJvm", libs.ktorfit.ksp)
-    add("kspIosX64", libs.ktorfit.ksp)
-    add("kspIosArm64", libs.ktorfit.ksp)
-    add("kspIosSimulatorArm64", libs.ktorfit.ksp)
+    add("androidHostTestImplementation", libs.ktor.client.cio)
 }
 
 mavenPublishing {
@@ -102,10 +102,3 @@ mavenPublishing {
     }
 }
 
-afterEvaluate {
-    tasks.findByName("extractAndroidMainAnnotations")?.apply {
-        dependsOn("kspCommonMainKotlinMetadata")
-        dependsOn("kspAndroidMain")
-    }
-    tasks.findByName("sourcesJar")?.dependsOn("kspCommonMainKotlinMetadata")
-}

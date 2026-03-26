@@ -1,13 +1,12 @@
 package aditya.wibisana.voicepingapi
 
 import aditya.wibisana.voicepingapi.model.LoginResponse
-import de.jensklingenberg.ktorfit.Ktorfit
-import de.jensklingenberg.ktorfit.http.Field
-import de.jensklingenberg.ktorfit.http.FormUrlEncoded
-import de.jensklingenberg.ktorfit.http.POST
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.forms.submitForm
+import io.ktor.http.Parameters
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -16,16 +15,13 @@ const val clientSecret = "2359admin"
 const val grantType = "password"
 
 interface VoicepingApi {
-    @POST("v2/oauth/token")
-    @FormUrlEncoded
     suspend fun login(
-        @Field("username") username: String,
-        @Field("password") password: String,
-        @Field("grant_type") grantType: String = aditya.wibisana.voicepingapi.grantType,
-        @Field("client_id") clientId: String = aditya.wibisana.voicepingapi.clientId,
-        @Field("client_secret") clientSecret: String = aditya.wibisana.voicepingapi.clientSecret,
+        username: String,
+        password: String,
+        grantType: String = aditya.wibisana.voicepingapi.grantType,
+        clientId: String = aditya.wibisana.voicepingapi.clientId,
+        clientSecret: String = aditya.wibisana.voicepingapi.clientSecret,
     ): LoginResponse.Success
-
 }
 
 class API(
@@ -41,24 +37,34 @@ class API(
 
     private val httpClient = if (engine == null) {
         HttpClient {
-            expectSuccess = true
             install(ContentNegotiation) {
                 json(jsonConfig)
             }
         }
     } else {
         HttpClient(engine) {
-            expectSuccess = true // Helps catch non-200 errors early
             install(ContentNegotiation) {
                 json(jsonConfig)
             }
         }
     }
 
-    private val ktorfit = Ktorfit.Builder()
-        .baseUrl(baseUrl)
-        .httpClient(httpClient)
-        .build()
-
-    val service: VoicepingApi = ktorfit.createVoicepingApi()
+    val service: VoicepingApi = object : VoicepingApi {
+        override suspend fun login(
+            username: String,
+            password: String,
+            grantType: String,
+            clientId: String,
+            clientSecret: String,
+        ): LoginResponse.Success = httpClient.submitForm(
+            url = "${baseUrl}v2/oauth/token",
+            formParameters = Parameters.build {
+                append("username", username)
+                append("password", password)
+                append("grant_type", grantType)
+                append("client_id", clientId)
+                append("client_secret", clientSecret)
+            }
+        ).body()
+    }
 }

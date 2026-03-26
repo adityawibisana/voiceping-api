@@ -2,6 +2,8 @@ package io.github.kotlin.fibonacci.aditya.wibisana.voicepingapi.repository
 
 import aditya.wibisana.voicepingapi.VoicepingApi
 import aditya.wibisana.voicepingapi.model.LoginResponse
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -14,18 +16,16 @@ class Login(
     ) : Flow<State> = flow {
         emit(State.Loading)
         try {
-            val response = apiService.login(
-                username = username,
-                password = password,
-            )
-            emit(State.Success(response))
+            emit(State.Success(apiService.login(username = username, password = password)))
+        } catch (e: ResponseException) {
+            val failed = try {
+                e.response.body<LoginResponse.Failed>()
+            } catch (_: Exception) {
+                LoginResponse.Failed(code = e.response.status.value, message = e.message)
+            }
+            emit(State.Failed(failed))
         } catch (e: Exception) {
-            emit(State.Failed(
-                LoginResponse.Failed(
-                    code = 500,
-                    message = e.message
-                )
-            ))
+            emit(State.Failed(LoginResponse.Failed(code = 500, message = e.message)))
         }
     }
 
