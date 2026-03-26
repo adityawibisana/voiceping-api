@@ -61,6 +61,10 @@ kotlin {
     }
 }
 
+dependencies {
+    add("androidHostTestImplementation", libs.ktor.client.cio)
+}
+
 mavenPublishing {
     publishToMavenCentral(false)
     signAllPublications()
